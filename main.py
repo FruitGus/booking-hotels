@@ -40,12 +40,39 @@ def create_hotel(
     })
     return {"status": "OK"}
 
-# @app.put("/hotels/{hotel_id}")
-# def update_hotel(
-#         title : str = Query(description = "Название отеля"),
-#         name : str = Query(description = ""),
-# ):
-#     pass
+
+
+@app.put("/hotels/{hotel_id}")
+def update_hotel(
+        hotel_id: int,
+        title : str = Query(description = "Название отеля"),
+        name : str  = Query(description = "Имя отеля"),
+):
+    global hotels
+    for hotel in hotels:
+        if hotel["id"] == hotel_id:
+                hotel["title"] = title
+                hotel["name"] = name
+                return {"status": "OK", "hotel": hotel}
+
+
+
+@app.patch("/hotels/{hotel_id}")
+def update_hotel(
+        hotel_id: int,
+        title : str | None = Query(None, description = "Название отеля"),
+        name : str | None = Query(None, description = "Имя отеля"),
+):
+    global hotels
+    for hotel in hotels:
+        if hotel["id"] == hotel_id:
+            if title is not None:
+                hotel["title"] = title
+            if name is not None:
+                hotel["name"] = name
+            return {"status": "OK", "hotel": hotel}
+
+
 
 @app.delete("/hotels/{hotel_id}")
 def delete_hotel(hotel_id: int):
