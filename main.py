@@ -64,9 +64,9 @@ def partially_update_hotel(
 ):
     global hotels
     hotel = [hotel for hotel in hotels if hotel["id"] == hotel_id][0]
-    if title:
+    if title is not None:
         hotel["title"] = title
-    if name:
+    if name is not None:
         hotel["name"] = name
     return {"status": "OK"}
 
@@ -94,5 +94,5 @@ async def swagger_ui_redirect():
     return get_swagger_ui_oauth2_redirect_html()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app",  host="127.0.0.1", port=8001, reload=True)
+    uvicorn.run("main:app",  host="127.0.0.1", port=8002, reload=True)
 
