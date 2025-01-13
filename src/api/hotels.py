@@ -2,9 +2,9 @@ from typing import Annotated
 
 from fastapi import Query, APIRouter, Body, Depends
 
-from schemas.hotels import Hotel, HotelPATCH
+from src.schemas.hotels import Hotel, HotelPATCH
 
-from dependencies import PaginationDep
+from src.api.dependencies import PaginationDep
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
