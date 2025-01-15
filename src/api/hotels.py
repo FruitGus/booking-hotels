@@ -62,6 +62,8 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
 ):
     async with async_session_maker() as session:
         add_hotel_stmt = insert(HotelsOrm).values(**hotel_data.model_dump())
+        # Дебаг запросов, создаваемых SQLAlchemy
+        # print(add_hotel_stmt.compile(compile_kwargs={"literal_binds": True}))
         await session.execute(add_hotel_stmt)
         await session.commit()
 
