@@ -1,4 +1,7 @@
-from sqlalchemy import select, func
+from msilib import add_data
+
+from pydantic import BaseModel
+from sqlalchemy import select, insert
 
 from src.models.hotels import HotelsOrm
 from src.repositories.base import BaseRepository
@@ -28,4 +31,13 @@ class HotelsRepository(BaseRepository):
         result = await self.session.execute(query)
 
         return result.scalars().all()
+
+
+    async def add(self, data: BaseModel):
+        add_data_stmt = insert(self.model).values(**data.model_dump()).returning(self.model)
+        result = await self.session.execute(add_data_stmt)
+        return result.scalars().one()
+
+
+
 
