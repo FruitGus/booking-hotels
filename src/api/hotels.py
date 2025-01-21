@@ -64,12 +64,13 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
 
 
 @router.put("/{hotel_id}", summary="Обновление данных об отеле")
-def update_hotel(hotel_id: int, hotel_data: Hotel):
-    global hotels
-    hotel = [hotel for hotel in hotels if hotel["id"] == hotel_id][0]
-    hotel["title"] = hotel_data.title
-    hotel["name"] = hotel_data.name
-    return {"status": "OK", "hotel": hotel}
+async def update_hotel(hotel_id: None | int, hotel_data: Hotel):
+
+    async with async_session_maker() as session:
+        if hotel_id == {hotel_id}:
+            hotel = await HotelsRepository(session).edit(hotel_data)
+
+            return {"status": "OK", "hotel": hotel}
 
 
 
