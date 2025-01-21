@@ -1,6 +1,6 @@
 from fastapi import Query, APIRouter, Body, Depends
 
-from sqlalchemy import insert, select, or_
+from sqlalchemy import insert, select, or_, delete
 
 from src.database import async_session_maker
 from src.models.hotels import HotelsOrm
@@ -67,10 +67,10 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
 async def update_hotel(hotel_id: None | int, hotel_data: Hotel):
 
     async with async_session_maker() as session:
-        if hotel_id == {hotel_id}:
-            hotel = await HotelsRepository(session).edit(hotel_data)
+        await HotelsRepository(session).update(hotel_data, id=hotel_id)
+        await session.commit()
 
-            return {"status": "OK", "hotel": hotel}
+        return {"status": "OK"}
 
 
 
@@ -87,7 +87,8 @@ def partially_update_hotel(hotel_id: int, hotel_data: HotelPATCH):
 
 
 @router.delete("/{hotel_id}", summary="Удаление отеля")
-def delete_hotel(hotel_id: int):
-    global hotels
-    hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
+async def delete_hotel(hotel_id: int):
+    async with async_session_maker() as session:
+        await HotelsRepository(session).delete(id=hotel_id)
+        await session.commit()
     return {"status": "OK"}
