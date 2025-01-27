@@ -25,8 +25,16 @@ async def register_user(
         first_name=data.first_name,
         last_name=data.last_name
     )
-    async with async_session_maker() as session:
-        await UsersRepository(session).add(new_user_data)
-        await session.commit()
 
-        return {"status": "OK"}
+    async with async_session_maker() as session:
+        users_repo = UsersRepository(session)
+
+        existing_user = await users_repo.get_by_email(data.email)
+        if existing_user:
+            return {"status": "User already exist"}
+        else:
+            await UsersRepository(session).add(new_user_data)
+            await session.commit()
+
+            return {"status": "OK"}
+
