@@ -12,12 +12,14 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from src.api.hotels import router as router_hotels
 from src.api.auth import router as router_auth
+from src.api.rooms import router as router_rooms
 
 
 app = FastAPI(docs_url=None)
 
 app.include_router(router_auth)
 app.include_router(router_hotels)
+app.include_router(router_rooms)
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
@@ -34,5 +36,8 @@ async def swagger_ui_redirect():
     return get_swagger_ui_oauth2_redirect_html()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app",  host="127.0.0.1", port=8002, reload=True)
+    try:
+        uvicorn.run("main:app",  host="127.0.0.1", port=8002, reload=True)
+    except KeyboardInterrupt:
+        print("Server shutting down...")
 

@@ -10,9 +10,6 @@ router = APIRouter(prefix="/hotels", tags=["Отели"])
 
 
 
-
-
-
 @router.get("", summary="Получение информации об отелях")
 async def get_hotels(
         pagination: PaginationDep,
