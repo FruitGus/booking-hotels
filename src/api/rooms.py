@@ -51,6 +51,7 @@ async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db
     return {"status": "OK"}
 
 
+
 @router.patch("/{hotel_id}/rooms/{room_id}", summary="Частичное обновление номера")
 async def partially_update_room(hotel_id: int, room_id:int, room_data: RoomPatchRequest, db: DBDep):
     _room_data = RoomPatch(hotel_id=hotel_id, **room_data.model_dump(exclude_unset=True))
@@ -59,6 +60,8 @@ async def partially_update_room(hotel_id: int, room_id:int, room_data: RoomPatch
     await db.commit()
 
     return {"status": "OK"}
+
+
 
 @router.delete("/{hotel_id}/rooms/{room_id}", summary="Удаление номера")
 async def delete_room(hotel_id: int, room_id: int, db: DBDep):
