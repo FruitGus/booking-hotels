@@ -8,7 +8,7 @@ from sqlalchemy import Integer, String, ForeignKey
 
 
 class BookingsOrm(BaseOrm):
-    __tablename__ = "booking"
+    __tablename__ = "bookings"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
