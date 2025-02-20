@@ -6,9 +6,10 @@ from src.repositories.base import BaseRepository
 from src.repositories.utils import rooms_ids_for_booking
 from src.schemas.rooms import Room
 from src.database import engine
+from src.schemas.rooms import RoomWithRels
 
 from sqlalchemy import select, func
-
+from sqlalchemy.orm import selectinload, joinedload
 
 
 
@@ -42,5 +43,10 @@ class RoomsRepository(BaseRepository):
 
         rooms_ids_to_get = rooms_ids_for_booking(date_from, date_to, hotel_id)
 
-
-        return await self.get_filtered(RoomsOrm.id.in_(rooms_ids_to_get))
+        query = (
+            select(self.model)
+            .options(joinedload(self.model.facilities))
+            .filter(RoomsOrm.id.in_(rooms_ids_to_get))
+        )
+        result = await self.session.execute(query)
+        return [RoomWithRels.model_validate(model) for model in result.unique().scalars().all()]
