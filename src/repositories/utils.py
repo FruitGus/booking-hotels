@@ -9,7 +9,8 @@ from sqlalchemy import select, func
 def rooms_ids_for_booking(
             date_from: date,
             date_to: date,
-            hotel_id: int | None = None,
+            hotel_id: int | None = None
+
 ):
 
         rooms_count= (
