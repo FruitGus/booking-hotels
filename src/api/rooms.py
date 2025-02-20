@@ -2,9 +2,10 @@ from datetime import date
 
 
 from fastapi import APIRouter, Body, Query
+from sqlalchemy import select, delete
 
 from src.api.dependencies import DBDep
-from src.schemas.facilities import RoomFacilityAdd
+from src.schemas.facilities import RoomFacilityAdd, RoomFacility
 from src.schemas.rooms import RoomAdd, RoomAddRequest, RoomPatch, RoomPatchRequest
 
 
@@ -55,11 +56,17 @@ async def create_room(hotel_id: int, db: DBDep, room_data: RoomAddRequest = Body
 
 
 @router.put("/{hotel_id}/rooms/{room_id}", summary="Обновление номера")
-async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db: DBDep):
+async def update_room(hotel_id: int,
+                      room_id: int,
+                      room_data: RoomAddRequest,
+                      db: DBDep
+):
     _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
 
     await db.rooms.update(_room_data, id=room_id)
+    await db.rooms_facilities.set_room_facilities(room_id, facilities_ids=room_data.facilities_ids)
     await db.commit()
+
 
     return {"status": "OK"}
 
@@ -67,9 +74,13 @@ async def update_room(hotel_id: int, room_id: int, room_data: RoomAddRequest, db
 
 @router.patch("/{hotel_id}/rooms/{room_id}", summary="Частичное обновление номера")
 async def partially_update_room(hotel_id: int, room_id:int, room_data: RoomPatchRequest, db: DBDep):
-    _room_data = RoomPatch(hotel_id=hotel_id, **room_data.model_dump(exclude_unset=True))
+    _room_data_dict = room_data.model_dump(exclude_unset=True)
+    _room_data = RoomPatch(hotel_id=hotel_id, **_room_data_dict)
 
     await db.rooms.update(_room_data, exclude_unset=True, id=room_id, hotel_id=hotel_id)
+    if "facilities_ids" in _room_data_dict:
+        await db.rooms_facilities.set_room_facilities(room_id, facilities_ids=_room_data_dict["facilities_ids"])
+
     await db.commit()
 
     return {"status": "OK"}
