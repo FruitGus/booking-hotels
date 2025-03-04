@@ -10,3 +10,10 @@ celery_instance = Celery(
     ],
     broker_connection_retry_on_startup=True,
 )
+
+celery_instance.conf.beat_schedule = {
+    "luboe-nazvanie" : {
+        "task": "booking_today_checkin",
+        "schedule": 5,
+    }
+}
