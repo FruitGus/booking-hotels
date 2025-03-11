@@ -1,5 +1,7 @@
 import pytest
 from sqlalchemy.ext.asyncio import create_async_engine
+
+from src.api.dependencies import get_db
 from src.config import settings
 from src.database import BaseOrm, engine_null_pull, async_session_maker, async_session_maker_null_pool
 from src.main import app
@@ -18,11 +20,18 @@ async def check_test_mode():
     assert settings.MODE == "TEST"
 
 
+async def get_db_null_pool():
+    async with DBManager(session_factory=async_session_maker_null_pool) as db:
+        yield db
 
 @pytest.fixture(scope="function")
 async def db() -> DBManager:
-    async with DBManager(session_factory=async_session_maker_null_pool) as db:
+    async for db in get_db_null_pool():
         yield db
+
+
+
+app.dependency_overrides[get_db] = get_db_null_pool
 
 
 
