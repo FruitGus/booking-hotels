@@ -61,7 +61,7 @@ async def swagger_ui_redirect():
 
 if __name__ == "__main__":
     try:
-        uvicorn.run("main:app",  host="127.0.0.1", port=8002, reload=True)
+        uvicorn.run("main:app",  host="127.0.0.1", port=8002, reload=True, factory=True)
     except KeyboardInterrupt:
         print("Server shutting down...")
 
