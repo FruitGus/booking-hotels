@@ -80,3 +80,18 @@ async def register_user(ac, setup_database):
     )
 
 
+@pytest.fixture(scope="session")
+async def authenticated_ac(ac, register_user):
+    response = await ac.post(
+        "/auth/login",
+        json={
+            "email": "Fruit@mail.ru",
+            "password": "1234"
+        }
+    )
+    data = response.json()
+    assert "access_token" in data, "Токен не вернулся!"
+    assert data["token_type"] == "bearer", "Неверный тип токена!"
+
+    print(f"Полученный токен: {data['access_token'][:10]}...")
+
